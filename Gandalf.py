@@ -66,7 +66,7 @@ class Elevator:
             for possible_floor in range(self.velocity):
                 curr_floor = self.position + possible_floor
                 if curr_floor > self.max_floor: break
-                if self.people[curr_floor] or waiting_list[curr_floor][UP]: destination = curr_floor; break
+                if curr_floor in self.people and self.people[curr_floor] or waiting_list[curr_floor][UP]: destination = curr_floor; break
             return destination
         
         else:
@@ -74,7 +74,7 @@ class Elevator:
             for possible_floor in range(self.velocity):
                 curr_floor = self.position - possible_floor
                 if curr_floor < 0: break
-                if self.people[curr_floor] or waiting_list[curr_floor][DOWN]: destination = curr_floor; break
+                if curr_floor in self.people and self.people[curr_floor] or waiting_list[curr_floor][DOWN]: destination = curr_floor; break
             return destination
 
     
@@ -88,6 +88,7 @@ class Elevator:
 
     def remove_people(self, curr_time):
         used_time = 0
+        if self.position not in self.people: return 0
         for called_time in self.people[self.position]:
             used_time += curr_time - called_time
         return used_time
@@ -99,7 +100,7 @@ class Elevator_Simulator:
 
     global UP, DOWN, capacity, openning_time, closing_time, available_time, v1, v2
 
-    def __init__(self, querries):
+    def __init__(self, querries, L, M, K):
         self.curr_time = start_time
         self.querries = querries #should be sorted time-decreasing order
         self.elevators = [Elevator(L, M) for _ in range(K)]
@@ -108,7 +109,7 @@ class Elevator_Simulator:
 
     def main(self):
         while self.curr_time <= end_time:
-            if self.querries[-1][2] == self.curr_time:
+            while self.querries[-1][2] == self.curr_time:
                 arrival, departure, call_time = self.querries.pop()
                 if departure < arrival:
                     self.waiting_list[departure][UP].append((arrival, call_time))
