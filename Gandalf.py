@@ -2,15 +2,20 @@
 from collections import deque
 
 UP = 1; DOWN = 0
+start_time = 32400
+end_time = 86399
+buildings_data = {"Samsung":(49,4), "63-Building":(63, 5),"ESB":(102, 4)} #edit here!
+L, K, M = buildings_data["Samsung"]
+capacity = 17
+openning_time = closing_time = 4
+available_time = 8
+v1 = 1; v2 = 3
+
 class Elevator:
 
-    global UP, DOWN
-    #v1 = 1; v2 = 3
-    capacity = 17
-    openning_time = closing_time = 4
-    available_time = 8
+    global UP, DOWN, capacity, openning_time, closing_time, available_time, v1, v2
 
-    def __init__(self, L, M, v):
+    def __init__(self, L, M):
         self.position = M
         self.direction = UP
         self.max_floor = L-1
@@ -19,7 +24,7 @@ class Elevator:
         self.available = 0
         self.openning = 0
         self.closing = 0
-        self.velocity = v #v1 = 1, v2 = 3
+        self.velocity = v1 #v1 = 1, v2 = 3
         self.destination = M
     
     def isStop(self):
@@ -99,11 +104,7 @@ class Elevator:
 
 class Elevator_Simulator:
 
-    global UP, DOWN
-    start_time = 32400
-    end_time = 86399
-    buildings_data = {"Samsung":(49,4), "63-Building":(63, 5),"ESB":(102, 4)} #edit here!
-    L, K, M = buildings_data["Samsung"]
+    global UP, DOWN, capacity, openning_time, closing_time, available_time, v1, v2
 
     def __init__(self, querries):
         self.curr_time = start_time
@@ -136,48 +137,26 @@ class Elevator_Simulator:
                     else:
                         EV.position = destination
             self.curr_time += 1
+        return self.total_time
 
 class High_Low(Elevator_Simulator):
 
-    global UP, DOWN
-    start_time = 32400
-    end_time = 86399
-    buildings_data = {"Samsung":(49,4), "63-Building":(63, 5),"ESB":(102, 4)} #edit here!
-    L, K, M = buildings_data["Samsung"]
-
-    def __init__(self, querries):
-        self.curr_time = start_time
+    def __init__(self, querries, L, M, K):
         self.querries = querries #should be sorted time-decreasing order
         self.elevators = [Elevator(L, M) for _ in range(K)]
-        self.waiting_list = [[deque(),deque()] for _ in range(L)]
-        self.total_time = 0
+
 
 class Even_Odd(Elevator_Simulator):
 
-    global UP, DOWN
-    start_time = 32400
-    end_time = 86399
-    buildings_data = {"Samsung":(49,4), "63-Building":(63, 5),"ESB":(102, 4)} #edit here!
-    L, K, M = buildings_data["Samsung"]
-
-    def __init__(self, querries):
-        self.curr_time = start_time
+    def __init__(self, querries, L, M, K):
         self.querries = querries #should be sorted time-decreasing order
         self.elevators = [Elevator(L, M) for _ in range(K)]
-        self.waiting_list = [[deque(),deque()] for _ in range(L)]
-        self.total_time = 0
 
 class Collective_Control(Elevator_Simulator):
 
-    global UP, DOWN
-    start_time = 32400
-    end_time = 86399
-    buildings_data = {"Samsung":(49,4), "63-Building":(63, 5),"ESB":(102, 4)} #edit here!
-    L, K, M = buildings_data["Samsung"]
-
-    def __init__(self, querries):
-        self.curr_time = start_time
+    def __init__(self, querries, L, M, K):
         self.querries = querries #should be sorted time-decreasing order
         self.elevators = [Elevator(L, M) for _ in range(K)]
-        self.waiting_list = [[deque(),deque()] for _ in range(L)]
-        self.total_time = 0
+
+S1 = Collective_Control(querries, L, M, K)
+S1_result = S1.main()
