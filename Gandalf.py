@@ -130,8 +130,7 @@ class Elevator_Simulator:
                         EV.stop()
                     elif destination == EV.position:
                         EV.stop()
-                    else:
-                        EV.position = destination
+                    EV.position = destination
             self.curr_time += 1
         return self.total_time
 
