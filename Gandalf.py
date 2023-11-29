@@ -74,7 +74,7 @@ class Elevator:
             for possible_floor in range(self.velocity):
                 curr_floor = self.position - possible_floor
                 if curr_floor < 0: break
-                if curr_floor in self.people and self.people[curr_floor] or waiting_list[curr_floor][DOWN]: destination = curr_floor; break
+                if (curr_floor in self.people and self.people[curr_floor]) or waiting_list[curr_floor][DOWN]: destination = curr_floor; break
             return destination
 
     
@@ -109,7 +109,7 @@ class Elevator_Simulator:
 
     def main(self):
         while self.curr_time <= end_time:
-            while self.querries[-1][2] == self.curr_time:
+            while self.querries and self.querries[-1][2] == self.curr_time:
                 arrival, departure, call_time = self.querries.pop()
                 if departure < arrival:
                     self.waiting_list[departure][UP].append((arrival, call_time))
@@ -126,7 +126,9 @@ class Elevator_Simulator:
                     EV.operate()
                 else:
                     destination = EV.determine_destination(self.waiting_list)
-                    if destination == EV.position:
+                    if (destination in EV.people and EV.people[destination]) or (self.waiting_list[destination][EV.direction]):
+                        EV.stop()
+                    elif destination == EV.position:
                         EV.stop()
                     else:
                         EV.position = destination
