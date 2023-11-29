@@ -1,23 +1,20 @@
 from scipy.stats import norm
 import matplotlib.pyplot as plt
 import numpy as np
-
-L = 49
-# 전체 층수
-K = 4
-# 4대씩 Group으로 5 Group이 움직임
-M = 7
-# 1층
-T_O = 32400
-T_C = 86399
-# open시간 close 시간
-V1 = 1
-V2 = 3
-# 층 / s
-T = 11
-# EV 문 열리고 닫히는 시간
+from constant import *
 
 def makeNCQuery():
+
+    global capacity, openning_time, closing_time, available_time, v1, v2, start_time, end_time, L, K, M
+
+    T_O = start_time
+    T_C = end_time
+    # open시간 close 시간
+    V1 = v1
+    V2 = v2
+    # 층 / s
+    T = 11
+    # EV 문 열리고 닫히는 시간
 
     # 자연수 만들어주는 함수
     def NatList(L):
@@ -139,11 +136,9 @@ def makeNCQuery():
         query = []
         for i in range(N):
             query.append([a[i], d[i], int(t[i])])
+        query.sort(key = lambda x : -x[2])
         return query
 
 
     query = makequery(C)
-    return N, C, query
-
-print(makeNCQuery())
-
+    return query
