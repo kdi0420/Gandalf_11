@@ -89,7 +89,8 @@ class Elevator:
     def remove_people(self, curr_time):
         used_time = 0
         if self.position not in self.people: return 0
-        for called_time in self.people[self.position]:
+        while self.people[self.position]:
+            called_time = self.people[self.position].pop()
             used_time += curr_time - called_time
         return used_time
     
