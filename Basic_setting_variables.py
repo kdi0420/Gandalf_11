@@ -131,7 +131,7 @@ def makeNCQuery():
             d.append(d_i)
 
         # Uniform 분포 따르는 변수 만들기 (t_i)
-        t = np.random.uniform(T_O, T_C, N)
+        t = np.random.uniform(T_O, T_C - 30*60, N)
         NatList(t)
         query = []
         for i in range(N):

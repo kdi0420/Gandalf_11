@@ -8,7 +8,9 @@ def test_S1(querries):
     S1 = Elevator_Simulator(querries, L, M, K)
     return S1.main()
 
-for i in range(100):
-    querries = makeNCQuery()
-    print(test_S1(querries))
+with open("S1_10000.txt", 'w') as file:
+    for i in range(10000):
+        querries = makeNCQuery()
+        file.write(str(test_S1(querries)) + "\n")
+        print(i)
 

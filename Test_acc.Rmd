@@ -1,0 +1,29 @@
+---
+title: "Test"
+author: "김동인"
+date: "2023-11-06"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<br>
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(DescTools)
+library(nycflights13)
+```
+
+
+```{r}
+S1 = read.table("S1_10000.txt", header = FALSE)
+
+ggplot(data = S1) +
+  geom_histogram(mapping = aes(x = V1), bins = 50)
+
+#max(table(S1))
+```
