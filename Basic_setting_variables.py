@@ -62,15 +62,27 @@ def makeNCQuery():
 
     # 최댓값 찾아서 교환
 
-    def swap_max_with_mth(lst, m):
+    # def swap_max_with_mth(lst, m):
+    #     if m < len(lst):
+    #         # 리스트에서 최대값과 그 인덱스를 찾음
+    #         max_value = max(lst)
+    #         max_index = lst.index(max_value)
+
+    #         # 최대값과 M번째 값 교환
+    #         lst[m], lst[max_index] = lst[max_index], lst[m]
+
+    #         return lst
+    #     else:
+    #         print("Error: Index m is out of range.")
+
+    def make_C_M(lst, m):
+        #c_m이 나머지 모두의 합의 절반 혼잡도를 가짐
         if m < len(lst):
-            # 리스트에서 최대값과 그 인덱스를 찾음
-            max_value = max(lst)
-            max_index = lst.index(max_value)
-
-            # 최대값과 M번째 값 교환
-            lst[m], lst[max_index] = lst[max_index], lst[m]
-
+            sum = 0
+            for i in range(len(lst)):
+                if i != m:
+                    sum += lst[i]
+            lst[m] = sum / 2
             return lst
         else:
             print("Error: Index m is out of range.")
@@ -92,7 +104,7 @@ def makeNCQuery():
                 random_samples[i] = normal_distribution.rvs(size=1)[0]
 
         # C_l들 생성
-        C = swap_max_with_mth(random_samples, M)
+        C = make_C_M(random_samples, M)
         return C
 
     C = makeC(meanC, std_devC)

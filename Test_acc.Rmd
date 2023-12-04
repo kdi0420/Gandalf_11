@@ -29,3 +29,12 @@ ggplot() +
 
 #max(table(S1))
 ```
+
+
+```{r}
+df = read.table("S1_500_231204.txt", header = FALSE)
+
+ggplot() +
+  geom_histogram(data = df, mapping = aes(x = V1), bins = 50, fill = "red", alpha = 0.3)
+```
+

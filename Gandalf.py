@@ -103,7 +103,7 @@ class Elevator_Simulator:
 
     def __init__(self, querries, L, M, K):
         self.curr_time = start_time
-        self.querries = querries #should be sorted time-decreasing order
+        self.querries = querries
         self.elevators = [Elevator(L, M) for _ in range(K)]
         self.waiting_list = [[deque(),deque()] for _ in range(L)]
         self.total_time = 0
@@ -138,18 +138,29 @@ class Elevator_Simulator:
 class High_Low(Elevator_Simulator):
 
     def __init__(self, querries, L, M, K):
-        self.querries = querries #should be sorted time-decreasing order
+        self.curr_time = start_time
+        self.querries = querries
         self.elevators = [Elevator(L, M) for _ in range(K)]
+        self.waiting_list = [[deque(),deque()] for _ in range(L)]
+        self.total_time = 0
+
 
 
 class Even_Odd(Elevator_Simulator):
 
     def __init__(self, querries, L, M, K):
-        self.querries = querries #should be sorted time-decreasing order
+        self.curr_time = start_time
+        self.querries = querries
         self.elevators = [Elevator(L, M) for _ in range(K)]
+        self.waiting_list = [[deque(),deque()] for _ in range(L)]
+        self.total_time = 0
+
 
 class Collective_Control(Elevator_Simulator):
 
     def __init__(self, querries, L, M, K):
-        self.querries = querries #should be sorted time-decreasing order
+        self.curr_time = start_time
+        self.querries = querries
         self.elevators = [Elevator(L, M) for _ in range(K)]
+        self.waiting_list = [[deque(),deque()] for _ in range(L)]
+        self.total_time = 0
