@@ -20,10 +20,12 @@ library(nycflights13)
 
 
 ```{r}
-S1 = read.table("S1_10000.txt", header = FALSE)
+before = read.table("S1_10000_before.txt", header = FALSE)
+after = read.table("S1_10000.txt", header = FALSE)
 
-ggplot(data = S1) +
-  geom_histogram(mapping = aes(x = V1), bins = 50)
+ggplot() +
+  geom_histogram(data = after, mapping = aes(x = V1), bins = 50, fill = "red", alpha = 0.3) +
+  geom_histogram(data = before, mapping = aes(x = V1), bins = 50, fill = "blue", alpha = 0.3)
 
 #max(table(S1))
 ```
