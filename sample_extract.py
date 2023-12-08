@@ -23,7 +23,7 @@ def save_into_Excel(attempts, mode = 4):
     modes = 'S'+f'{mode}'
     sheet_name = '_'.join([modes, str(attempts), today])
 
-    file_path = './history.xlsx'
+    file_path = './Samsung_history.xlsx'
     write_wb = openpyxl.load_workbook(file_path)
     write_ws = write_wb.create_sheet(title=sheet_name)
     write_ws.append(['attempt'] + ['S'+f'{i}' for i in range(1,4)])
@@ -55,7 +55,7 @@ def save_into_Excel(attempts, mode = 4):
 #  
 # ----------- Result -------------
 #  
-#  those are stored in 'history.xlsx', the Excel file
+#  those are stored in 'Samsung_history.xlsx', the Excel file
 #
 #  sheet title = [S{mode number}_{queries number}_{date}]
 # 
