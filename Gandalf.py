@@ -6,12 +6,11 @@ UP = 1; DOWN = 0
 
 class Elevator:
 
-    global UP, DOWN, capacity, openning_time, closing_time, available_time, v1, v2
-
-    def __init__(self, L, M):
+    def __init__(self, L, M, l=0):
         self.position = M
         self.direction = UP
         self.max_floor = L-1
+        self.min_floor = l
         self.first_floor = M
         self.people = {} #key = arrival floor, value = call_time
         self.available = 0
@@ -53,9 +52,9 @@ class Elevator:
                     self.direction = DOWN
         
         else:
-            if self.position == 0: self.direction = UP
+            if self.position == self.min_floor: self.direction = UP
             elif self.people == {}:
-                for floor in range(1, self.position+1):
+                for floor in range(self.min_floor+1, self.position+1):
                     if waiting_list[floor][DOWN]: break
                 else:
                     self.direction = UP
@@ -70,10 +69,10 @@ class Elevator:
             return destination
         
         else:
-            destination = max(0, self.position - self.velocity)
+            destination = max(self.min_floor, self.position - self.velocity)
             for possible_floor in range(self.velocity):
                 curr_floor = self.position - possible_floor
-                if curr_floor < 0: break
+                if curr_floor < self.min_floor: break
                 if (curr_floor in self.people and self.people[curr_floor]) or waiting_list[curr_floor][DOWN]: destination = curr_floor; break
             return destination
 
@@ -97,16 +96,94 @@ class Elevator:
     def __str__(self):
         return ""
 
-class Elevator_Simulator:
 
-    global UP, DOWN, capacity, openning_time, closing_time, available_time, v1, v2
+class Constraint_Elevator(Elevator):
+
+    def __init__(self, L, M, l=0, constraint=True):
+        self.position = M
+        self.direction = UP
+        self.max_floor = L-1
+        self.min_floor = l
+        self.first_floor = M
+        self.people = {} #key = arrival floor, value = call_time
+        self.available = 0
+        self.openning = 0
+        self.closing = 0
+        self.velocity = v1 #v1 = 1, v2 = 3
+        self.destination = M
+        self.available_floor = self.set_available_floor(constraint)
+    
+    def set_available_floor(self, constraint):
+        pass
+    
+    def determine_destination(self, waiting_list):
+        #determine_direction part
+        if self.direction == UP:
+            if self.position == self.max_floor: self.direction = DOWN
+            elif self.people == {}:
+                for floor in range(self.position, self.max_floor):
+                    if floor not in self.available_floor: continue
+                    if waiting_list[floor][UP]: break
+                else:
+                    self.direction = DOWN
+        
+        else:
+            if self.position == self.min_floor: self.direction = UP
+            elif self.people == {}:
+                for floor in range(self.min_floor+1, self.position+1):
+                    if floor not in self.available_floor: continue
+                    if waiting_list[floor][DOWN]: break
+                else:
+                    self.direction = UP
+        
+        #determine destination part
+        if self.direction == UP:
+            destination = min(self.max_floor, self.position + self.velocity)
+            for possible_floor in range(self.velocity):
+                curr_floor = self.position + possible_floor
+                if curr_floor > self.max_floor: break
+                if curr_floor not in self.available_floor: continue
+                if curr_floor in self.people and self.people[curr_floor] or waiting_list[curr_floor][UP]: destination = curr_floor; break
+            return destination
+        
+        else:
+            destination = max(self.min_floor, self.position - self.velocity)
+            for possible_floor in range(self.velocity):
+                curr_floor = self.position - possible_floor
+                if curr_floor < self.min_floor: break
+                if curr_floor not in self.available_floor: continue
+                if (curr_floor in self.people and self.people[curr_floor]) or waiting_list[curr_floor][DOWN]: destination = curr_floor; break
+            return destination
+
+
+class Even_Odd_Elevator(Constraint_Elevator):
+    
+    def set_available_floor(self, isEven):
+        if (isEven and self.first_floor % 2) or (not isEven and self.first_floor % 2 == 0):
+            self.available_floor = set(range(0, self.max_floor+1, 2)) - set(range(0, self.min_floor, 2))
+        else:
+            self.available_floor = set(range(1, self.max_floor+1, 2)) - set(range(1, self.min_floor, 2))
+        self.available_floor |= set([self.first_floor])
+
+
+class High_Low_Elevator(Constraint_Elevator):
+    
+    def set_available_floor(self, isHigh):
+        average = (self.min_floor + self.max_floor) // 2
+        if (isHigh):
+            self.available_floor = set(range(average, self.max_floor+1))
+        else:
+            self.available_floor = set(range(self.min_floor, average+1))
+
+
+class Elevator_Simulator:
 
     def __init__(self, querries, L, M, K):
         self.curr_time = start_time
         self.querries = querries
         self.elevators = [Elevator(L, M) for _ in range(K)]
         self.waiting_list = [[deque(),deque()] for _ in range(L)]
-        self.total_time = 0
+        self.total_time = 0        
 
     def main(self):
         while self.curr_time <= end_time:
@@ -135,26 +212,6 @@ class Elevator_Simulator:
             self.curr_time += 1
         return self.total_time
 
-class High_Low(Elevator_Simulator):
-
-    def __init__(self, querries, L, M, K):
-        self.curr_time = start_time
-        self.querries = querries
-        self.elevators = [Elevator(L, M) for _ in range(K)]
-        self.waiting_list = [[deque(),deque()] for _ in range(L)]
-        self.total_time = 0
-
-
-
-class Even_Odd(Elevator_Simulator):
-
-    def __init__(self, querries, L, M, K):
-        self.curr_time = start_time
-        self.querries = querries
-        self.elevators = [Elevator(L, M) for _ in range(K)]
-        self.waiting_list = [[deque(),deque()] for _ in range(L)]
-        self.total_time = 0
-
 
 class Collective_Control(Elevator_Simulator):
 
@@ -162,5 +219,33 @@ class Collective_Control(Elevator_Simulator):
         self.curr_time = start_time
         self.querries = querries
         self.elevators = [Elevator(L, M) for _ in range(K)]
+        self.waiting_list = [[deque(),deque()] for _ in range(L)]
+        self.total_time = 0
+
+
+class High_Low(Elevator_Simulator):
+
+    def __init__(self, querries, L, M, K):
+        self.curr_time = start_time
+        self.querries = querries
+        high_elevators = [High_Low_Elevator(L, M) for _ in range((K-1)//2)]
+        low_elevators = [High_Low_Elevator(L, M) for _ in range((K-1)//2)]
+        for EV in high_elevators: EV.set_available_floor(isHigh=True)
+        for EV in low_elevators: EV.set_available_floor(isHigh=False)
+        self.elevators = high_elevators + low_elevators + [Elevator(L,M) for _ in range(int(K % 2) + 1)]
+        self.waiting_list = [[deque(),deque()] for _ in range(L)]
+        self.total_time = 0
+
+
+class Even_Odd(Elevator_Simulator):
+
+    def __init__(self, querries, L, M, K):
+        self.curr_time = start_time
+        self.querries = querries
+        even_elevators = [Even_Odd_Elevator(L, M) for _ in range((K-1)//2)]
+        odd_elevators = [Even_Odd_Elevator(L, M) for _ in range((K-1)//2)]
+        for EV in even_elevators: EV.set_available_floor(isEven=True)
+        for EV in odd_elevators: EV.set_available_floor(isEven=False)
+        self.elevators = even_elevators + odd_elevators + [Elevator(L,M) for _ in range(int(K % 2) + 1)]
         self.waiting_list = [[deque(),deque()] for _ in range(L)]
         self.total_time = 0
