@@ -56,7 +56,12 @@ def save_into_Excel(attempts, mode = 4):
 # ----------- Result -------------
 #  
 #  those are stored in 'history.xlsx', the Excel file
+#
 #  sheet title = [S{mode number}_{queries number}_{date}]
+# 
+#  example) if mode is 3, we tried 1000 queries in 9, Dec.,
+#       then, sheet title would be "S3_1000_20231209"
+# 
 #  
 #      < following examples >
 #  

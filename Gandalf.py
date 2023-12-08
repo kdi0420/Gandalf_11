@@ -97,7 +97,6 @@ class Elevator:
         return ""
 
 
-
 class Constraint_Elevator(Elevator):
 
     def __init__(self, L, M, l=0, constraint=True):
@@ -157,7 +156,6 @@ class Constraint_Elevator(Elevator):
             return destination
 
 
-
 class Even_Odd_Elevator(Constraint_Elevator):
     
     def set_available_floor(self, isEven):
@@ -166,7 +164,6 @@ class Even_Odd_Elevator(Constraint_Elevator):
         else:
             self.available_floor = set(range(1, self.max_floor+1, 2)) - set(range(1, self.min_floor, 2))
         self.available_floor |= set([self.first_floor])
-
 
 
 class High_Low_Elevator(Constraint_Elevator):
@@ -179,7 +176,6 @@ class High_Low_Elevator(Constraint_Elevator):
             self.available_floor = set(range(self.min_floor, average+1))
 
 
-
 class Elevator_Simulator:
 
     def __init__(self, querries, L, M, K):
@@ -187,19 +183,16 @@ class Elevator_Simulator:
         self.querries = querries
         self.elevators = [Elevator(L, M) for _ in range(K)]
         self.waiting_list = [[deque(),deque()] for _ in range(L)]
-        self.total_time = 0
-    
-    def add_query(self, query):
-        arrival, departure, call_time = query
-        if departure < arrival:
-            self.waiting_list[departure][UP].append((arrival, call_time))
-        else:
-            self.waiting_list[departure][DOWN].append((arrival, call_time))
+        self.total_time = 0        
 
     def main(self):
         while self.curr_time <= end_time:
             while self.querries and self.querries[-1][2] == self.curr_time:
-                self.add_query(self.querries.pop())
+                arrival, departure, call_time = self.querries.pop()
+                if departure < arrival:
+                    self.waiting_list[departure][UP].append((arrival, call_time))
+                else:
+                    self.waiting_list[departure][DOWN].append((arrival, call_time))
             
             for EV in self.elevators:
                 if EV.isStop():
@@ -220,7 +213,6 @@ class Elevator_Simulator:
         return self.total_time
 
 
-
 class Collective_Control(Elevator_Simulator):
 
     def __init__(self, querries, L, M, K):
@@ -229,7 +221,6 @@ class Collective_Control(Elevator_Simulator):
         self.elevators = [Elevator(L, M) for _ in range(K)]
         self.waiting_list = [[deque(),deque()] for _ in range(L)]
         self.total_time = 0
-
 
 
 class High_Low(Elevator_Simulator):
@@ -244,7 +235,6 @@ class High_Low(Elevator_Simulator):
         self.elevators = high_elevators + low_elevators + [Elevator(L,M) for _ in range(int(K % 2) + 1)]
         self.waiting_list = [[deque(),deque()] for _ in range(L)]
         self.total_time = 0
-
 
 
 class Even_Odd(Elevator_Simulator):
