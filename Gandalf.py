@@ -199,8 +199,6 @@ class High_Low(Elevator_Simulator):
             self.curr_time += 1
         return self.total_time
 
-
-
 class Even_Odd(Elevator_Simulator):
 
     def __init__(self, querries, L, M, K):
