@@ -55,7 +55,7 @@ def save_into_Excel(attempts, mode = 4):
 #  
 # ----------- Result -------------
 #  
-#  those are stored in 'Samsung_history.xlsx', the Excel file
+#  those will be stored in 'Samsung_history.xlsx', the Excel file
 #
 #  sheet title = [S{mode number}_{queries number}_{date}]
 # 
