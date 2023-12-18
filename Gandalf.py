@@ -1,6 +1,7 @@
 #GanDalP November Project
 from collections import deque
 from constant import *
+from random import random
 
 UP = 1; DOWN = 0
 
@@ -40,6 +41,45 @@ class Elevator:
             if not self.available: self.closing = closing_time
         elif self.closing:
             self.closing -= 1
+    
+    def ignore(self):
+        # it returns, whether consider the calls or not
+        # true : NOT ignore /// false : ignore
+        calc_mode = "capacity"
+        additional = self._additional(calc_mode)
+        ignore_prob = self._calculate_ignore_prob(calc_mode, additional)
+        return not self._ignore_call(ignore_prob)
+    
+    def _additional(self, calc_mode):
+        if calc_mode == "capacity": return None
+        if calc_mode == "similar": return 0
+        if calc_mode == "complexity": return float('inf')
+        if calc_mode == "call": return 0
+    
+    def _ignore_call(self, ignore_prob):
+        comp_prob = random()
+        return (comp_prob <= ignore_prob)
+    
+    def _calculate_ignore_prob(self, calc_mode="capacity", additional=0):
+        if calc_mode == "capacity":
+            return len(self.people) / capacity
+        if calc_mode == "similar":
+            # additional represents existance of similar kind of EV
+            # If it exists, 'always' ignore
+            # Otherwise, 'always' get the call
+            return additional
+        if calc_mode == "complexity":
+            # additional represents complexity of current floor
+            # if current complexity is less than criteria, it returns 'some' prob.
+            # Verifying the values of criteria
+            criteria_complexity = 0.1
+            if additional < criteria_complexity:
+                return (criteria_complexity - additional) / criteria_complexity
+        if calc_mode == "call":
+            # additional represents the number of calls at that moment
+            temp = min(1, 15 / additional )
+            return 1 - temp
+        
 
     def determine_destination(self, waiting_list):
         #determine_direction part
@@ -47,7 +87,7 @@ class Elevator:
             if self.position == self.max_floor: self.direction = DOWN
             elif self.people == {}:
                 for floor in range(self.position, self.max_floor):
-                    if waiting_list[floor][UP]: break
+                    if waiting_list[floor][UP] and self.ignore(): break
                 else:
                     self.direction = DOWN
         
@@ -55,7 +95,7 @@ class Elevator:
             if self.position == self.min_floor: self.direction = UP
             elif self.people == {}:
                 for floor in range(self.min_floor+1, self.position+1):
-                    if waiting_list[floor][DOWN]: break
+                    if waiting_list[floor][DOWN] and self.ignore(): break
                 else:
                     self.direction = UP
         
@@ -65,7 +105,7 @@ class Elevator:
             for possible_floor in range(self.velocity):
                 curr_floor = self.position + possible_floor
                 if curr_floor > self.max_floor: break
-                if curr_floor in self.people and self.people[curr_floor] or waiting_list[curr_floor][UP]: destination = curr_floor; break
+                if curr_floor in self.people and self.people[curr_floor] or (waiting_list[curr_floor][UP] and self.ignore()): destination = curr_floor; break
             return destination
         
         else:
@@ -73,7 +113,7 @@ class Elevator:
             for possible_floor in range(self.velocity):
                 curr_floor = self.position - possible_floor
                 if curr_floor < self.min_floor: break
-                if (curr_floor in self.people and self.people[curr_floor]) or waiting_list[curr_floor][DOWN]: destination = curr_floor; break
+                if (curr_floor in self.people and self.people[curr_floor]) or (waiting_list[curr_floor][DOWN] and self.ignore()): destination = curr_floor; break
             return destination
 
     
@@ -123,7 +163,7 @@ class Constraint_Elevator(Elevator):
             elif self.people == {}:
                 for floor in range(self.position, self.max_floor):
                     if floor not in self.available_floor: continue
-                    if waiting_list[floor][UP]: break
+                    if waiting_list[floor][UP] and self.ignore(): break
                 else:
                     self.direction = DOWN
         
@@ -132,7 +172,7 @@ class Constraint_Elevator(Elevator):
             elif self.people == {}:
                 for floor in range(self.min_floor+1, self.position+1):
                     if floor not in self.available_floor: continue
-                    if waiting_list[floor][DOWN]: break
+                    if waiting_list[floor][DOWN] and self.ignore(): break
                 else:
                     self.direction = UP
         
@@ -143,7 +183,7 @@ class Constraint_Elevator(Elevator):
                 curr_floor = self.position + possible_floor
                 if curr_floor > self.max_floor: break
                 if curr_floor not in self.available_floor: continue
-                if curr_floor in self.people and self.people[curr_floor] or waiting_list[curr_floor][UP]: destination = curr_floor; break
+                if curr_floor in self.people and self.people[curr_floor] or (waiting_list[curr_floor][UP] and self.ignore()): destination = curr_floor; break
             return destination
         
         else:
@@ -152,7 +192,7 @@ class Constraint_Elevator(Elevator):
                 curr_floor = self.position - possible_floor
                 if curr_floor < self.min_floor: break
                 if curr_floor not in self.available_floor: continue
-                if (curr_floor in self.people and self.people[curr_floor]) or waiting_list[curr_floor][DOWN]: destination = curr_floor; break
+                if (curr_floor in self.people and self.people[curr_floor]) or (waiting_list[curr_floor][DOWN] and self.ignore()): destination = curr_floor; break
             return destination
 
 

@@ -73,4 +73,4 @@ def save_into_Excel(attempts, mode = 4):
 # 
 # you can check above them in 'history.xlsx' file!
 
-save_into_Excel(attempts=100, mode=2)
+save_into_Excel(attempts=100, mode=4)
