@@ -4,23 +4,23 @@ from Basic_setting_variables import *
 from Gandalf import *
 from constant import *
 
-def strategy_collective_control(queries): #S1 strategy
-    S1 = Collective_Control(queries, L, M, K)
+def strategy_collective_control(queries, ignored=False): #S1 strategy
+    S1 = Collective_Control(queries, L, M, K, i=ignored)
     return S1.main()
 
-def strategy_high_low(queries): #S2 strategy
-    S2 = High_Low(queries, L, M, K)
+def strategy_high_low(queries, ignored=False): #S2 strategy
+    S2 = High_Low(queries, L, M, K, i=ignored)
     return S2.main()
 
-def strategy_even_odd(queries): #S3 strategy
-    S3 = Even_Odd(queries, L, M, K)
+def strategy_even_odd(queries, ignored=False): #S3 strategy
+    S3 = Even_Odd(queries, L, M, K, i=ignored)
     return S3.main()
 
 
-def save_into_Excel(attempts, mode = 4):
+def save_into_Excel(attempts, mode = 4, ignored=False):
     now = datetime.datetime.now()
     today = now.strftime('%Y%m%d')
-    modes = 'S'+f'{mode}'
+    modes = ('ig' if ignored else '')+'S'+f'{mode}'
     sheet_name = '_'.join([modes, str(attempts), today])
 
     file_path = './Samsung_history.xlsx'
@@ -31,13 +31,13 @@ def save_into_Excel(attempts, mode = 4):
     for attempt in range(1,attempts+1):
         queries = makeNCQuery()
         if mode == 4:
-            datas = [attempt, strategy_collective_control(queries[:]), strategy_high_low(queries[:]), strategy_even_odd(queries[:])]
+            datas = [attempt, strategy_collective_control(queries[:], ignored), strategy_high_low(queries[:], ignored), strategy_even_odd(queries[:], ignored)]
         elif mode == 1:
-            datas = [attempt, strategy_collective_control(queries), 0, 0]
+            datas = [attempt, strategy_collective_control(queries, ignored), 0, 0]
         elif mode == 2:
-            datas = [attempt, 0, strategy_high_low(queries), 0]
+            datas = [attempt, 0, strategy_high_low(queries, ignored), 0]
         elif mode == 3:
-            datas = [attempt, 0, 0, strategy_even_odd(queries)]
+            datas = [attempt, 0, 0, strategy_even_odd(queries, ignored)]
         write_ws.append(datas)
         print(f"{attempt}-th testcase : {datas[1]:05} / {datas[2]:05} / {datas[3]:05}  seconds")
 
@@ -46,7 +46,8 @@ def save_into_Excel(attempts, mode = 4):
 
 # --------- User Manual ----------
 # attempt : the number of queries
-#   mode  : the order of strategy 
+#   mode  : the order of strategy
+# ignored : whether EVs ignore some calls or not 
 #  
 #           (1) - Collective Control
 #           (2) - High-Low
@@ -73,4 +74,4 @@ def save_into_Excel(attempts, mode = 4):
 # 
 # you can check above them in 'history.xlsx' file!
 
-save_into_Excel(attempts=100, mode=4)
+save_into_Excel(attempts=100, mode=4, ignored=False)

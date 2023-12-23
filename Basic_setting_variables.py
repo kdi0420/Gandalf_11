@@ -5,7 +5,7 @@ from constant import *
 
 def makeNCQuery():
 
-    global capacity, openning_time, closing_time, available_time, v1, v2, start_time, end_time, L, K, M
+    global capacity, openning_time, closing_time, available_time, v1, v2, start_time, end_time, L, K, M, num_people
 
     T_O = start_time
     T_C = end_time
@@ -28,7 +28,7 @@ def makeNCQuery():
     # Noraml Distribution 따르는 변수 만들기 (N)
 
     # N의 평균과 표준편차 정의
-    meanN = 20000 // 5
+    meanN = num_people
     std_devN = meanN*0.05
 
     def makeN(meanN, std_devN):
@@ -43,6 +43,8 @@ def makeNCQuery():
         return N
 
     N = makeN(meanN, std_devN)
+    while (N <= 0):
+        N = makeN(meanN, std_devN)
 
     # # 확률 밀도 함수 (PDF) 그리기
     # x = np.linspace(-4, 4, 100)
